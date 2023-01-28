@@ -43,4 +43,9 @@ public class UserServiceImpl implements UserService {
 
         return userReturn;
     }
+
+    @Override
+    public Boolean verifyLoginAndPassword() {
+        return null;
+    }
 }

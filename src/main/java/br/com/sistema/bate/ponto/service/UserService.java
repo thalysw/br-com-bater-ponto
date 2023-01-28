@@ -6,4 +6,6 @@ public interface UserService {
     UserDTO save(UserDTO userDTO);
 
     UserDTO findUserByLogin(String login);
+
+    Boolean verifyLoginAndPassword();
 }

@@ -1,5 +1,6 @@
 package br.com.sistema.bate.ponto.controller;
 
+import br.com.sistema.bate.ponto.dtos.LoginPassword;
 import br.com.sistema.bate.ponto.dtos.UserDTO;
 import br.com.sistema.bate.ponto.service.UserService;
 import org.slf4j.Logger;
@@ -24,9 +25,23 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
-    @GetMapping("/login")
+    @GetMapping("/byLogin")
     public ResponseEntity<UserDTO> findUserByLogin (@RequestParam(value = "login") String login) {
         UserDTO user = userService.findUserByLogin(login);
         return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    @GetMapping("/login")
+    public ResponseEntity<LoginPassword> verifyLoginAndPassword (@RequestBody LoginPassword loginPassword) {
+        UserDTO user = userService.findUserByLogin(loginPassword.getLogin());
+        LoginPassword loginPasswordReturn = new LoginPassword();
+        if(user.getLogin().equals(loginPassword.getLogin())){
+            if(user.getPassword().equals(loginPassword.getPassword())) {
+                loginPasswordReturn.setUser(true);
+                return ResponseEntity.status(HttpStatus.OK).body(loginPasswordReturn);
+            }
+        }
+        loginPasswordReturn.setUser(false);
+        return ResponseEntity.status(HttpStatus.OK).body(loginPasswordReturn);
     }
 }
