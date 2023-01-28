@@ -33,15 +33,7 @@ public class UserController {
 
     @GetMapping("/login")
     public ResponseEntity<LoginPassword> verifyLoginAndPassword (@RequestBody LoginPassword loginPassword) {
-        UserDTO user = userService.findUserByLogin(loginPassword.getLogin());
-        LoginPassword loginPasswordReturn = new LoginPassword();
-        if(user.getLogin().equals(loginPassword.getLogin())){
-            if(user.getPassword().equals(loginPassword.getPassword())) {
-                loginPasswordReturn.setUser(true);
-                return ResponseEntity.status(HttpStatus.OK).body(loginPasswordReturn);
-            }
-        }
-        loginPasswordReturn.setUser(false);
+        LoginPassword loginPasswordReturn = userService.verifyLoginAndPassword(loginPassword);
         return ResponseEntity.status(HttpStatus.OK).body(loginPasswordReturn);
     }
 }

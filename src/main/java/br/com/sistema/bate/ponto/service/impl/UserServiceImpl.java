@@ -1,11 +1,14 @@
 package br.com.sistema.bate.ponto.service.impl;
 
+import br.com.sistema.bate.ponto.dtos.LoginPassword;
 import br.com.sistema.bate.ponto.dtos.UserDTO;
 import br.com.sistema.bate.ponto.entities.User;
 import br.com.sistema.bate.ponto.repository.UserRepository;
 import br.com.sistema.bate.ponto.service.UserService;
-import org.springframework.beans.BeanUtils;
+import br.com.sistema.bate.ponto.serviceMapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,19 +20,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO save(UserDTO userDTO) {
 
-        User user = new User();
-        BeanUtils.copyProperties(userDTO, user);
-        user.setLogin(userDTO.getLogin());
-        user.setPassword(userDTO.getPassword());
-        user.setName(userDTO.getName());
-        user.setAge(userDTO.getAge());
-        user.setPhoneNumber(userDTO.getPhoneNumber());
-        user.setSexo(userDTO.getSexo());
-        user.setCpf(userDTO.getCpf());
+        User user = UserMapper.makeUserEntity(userDTO);
         userRepository.save(user);
-
-        UserDTO userReturn = new UserDTO();
-        BeanUtils.copyProperties(user, userReturn);
+        UserDTO userReturn = UserMapper.makeUserDto(user);
 
         return userReturn;
     }
@@ -38,14 +31,26 @@ public class UserServiceImpl implements UserService {
     public UserDTO findUserByLogin(String login) {
         User user = userRepository.findUserByLogin(login);
 
-        UserDTO userReturn = new UserDTO();
-        BeanUtils.copyProperties(user, userReturn);
+        if(user != null) {
+            UserDTO userReturn = UserMapper.makeUserDto(user);
+            return userReturn;
+        }
+        return null;
 
-        return userReturn;
     }
 
     @Override
-    public Boolean verifyLoginAndPassword() {
-        return null;
+    public LoginPassword verifyLoginAndPassword(LoginPassword loginPassword) {
+        UserDTO user = findUserByLogin(loginPassword.getLogin());
+        LoginPassword loginPasswordReturn = new LoginPassword();
+        if(user != null) {
+            if (user.getLogin().equals(loginPassword.getLogin())
+                    && user.getPassword().equals(loginPassword.getPassword())) {
+                loginPasswordReturn.setUser(true);
+                return loginPasswordReturn;
+            }
+        }
+        loginPasswordReturn.setUser(false);
+        return loginPasswordReturn;
     }
 }
