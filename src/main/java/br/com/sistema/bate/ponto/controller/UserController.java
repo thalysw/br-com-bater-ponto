@@ -21,19 +21,25 @@ public class UserController {
 
     @PostMapping()
     public ResponseEntity<UserDTO> newUser(@RequestBody UserDTO userDTO) {
+        logger.info("CONTROLLER - Using newUser method");
         UserDTO user = userService.save(userDTO);
+        logger.info("New user successfully registered, user: {}", user);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @GetMapping("/byLogin")
     public ResponseEntity<UserDTO> findUserByLogin (@RequestParam(value = "login") String login) {
+        logger.info("CONTROLLER - Using findUserByLogin method");
         UserDTO user = userService.findUserByLogin(login);
+        logger.info("User: {}", user);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
     @GetMapping("/login")
     public ResponseEntity<LoginPassword> verifyLoginAndPassword (@RequestBody LoginPassword loginPassword) {
+        logger.info("CONTROLLER - Using verifyLoginAndPassword method");
         LoginPassword loginPasswordReturn = userService.verifyLoginAndPassword(loginPassword);
+        logger.info("LoginPasswordReturn: {}", loginPasswordReturn);
         return ResponseEntity.status(HttpStatus.OK).body(loginPasswordReturn);
     }
 }
