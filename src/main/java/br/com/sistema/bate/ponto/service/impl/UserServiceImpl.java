@@ -33,4 +33,14 @@ public class UserServiceImpl implements UserService {
 
         return userReturn;
     }
+
+    @Override
+    public UserDTO findUserByLogin(String login) {
+        User user = userRepository.findUserByLogin(login);
+
+        UserDTO userReturn = new UserDTO();
+        BeanUtils.copyProperties(user, userReturn);
+
+        return userReturn;
+    }
 }
