@@ -1,6 +1,6 @@
 package br.com.sistema.bate.ponto.controller;
 
-import br.com.sistema.bate.ponto.dtos.LoginPassword;
+import br.com.sistema.bate.ponto.dtos.LoginPasswordDTO;
 import br.com.sistema.bate.ponto.dtos.UserDTO;
 import br.com.sistema.bate.ponto.service.UserService;
 import org.slf4j.Logger;
@@ -22,6 +22,12 @@ public class UserController {
     @PostMapping()
     public ResponseEntity<UserDTO> newUser(@RequestBody UserDTO userDTO) {
         logger.info("CONTROLLER - Using newUser method");
+
+        if(userService.existsByLogin(userDTO.getLogin())){
+            logger.info("Login already used!");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
+
         UserDTO user = userService.save(userDTO);
         logger.info("New user successfully registered, user: {}", user);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
@@ -35,11 +41,4 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<LoginPassword> verifyLoginAndPassword (@RequestBody LoginPassword loginPassword) {
-        logger.info("CONTROLLER - Using verifyLoginAndPassword method");
-        LoginPassword loginPasswordReturn = userService.verifyLoginAndPassword(loginPassword);
-        logger.info("LoginPasswordReturn: {}", loginPasswordReturn);
-        return ResponseEntity.status(HttpStatus.OK).body(loginPasswordReturn);
-    }
 }
