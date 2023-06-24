@@ -1,5 +1,6 @@
 package br.com.sistema.bate.ponto.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class LoginPassword {
     @Column(name = "PASSWORD")
     private String password;
     @Column(name = "DATE_TIME_LOGGED")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyy HH:mm:ss")
     private LocalDateTime dateTimeLogged;
     @Column(name = "USER_LOGGED")
     private Boolean userLogged;

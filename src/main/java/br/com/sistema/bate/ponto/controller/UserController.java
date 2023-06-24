@@ -1,7 +1,7 @@
 package br.com.sistema.bate.ponto.controller;
 
-import br.com.sistema.bate.ponto.dtos.LoginPasswordDTO;
 import br.com.sistema.bate.ponto.dtos.UserDTO;
+import br.com.sistema.bate.ponto.dtos.UserUpdatePasswordDTO;
 import br.com.sistema.bate.ponto.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +22,14 @@ public class UserController {
     @PostMapping()
     public ResponseEntity<UserDTO> newUser(@RequestBody UserDTO userDTO) {
         logger.info("CONTROLLER - Using newUser method");
-
+        // fazer tratativa para quando o body for null
         if(userService.existsByLogin(userDTO.getLogin())){
             logger.info("Login already used!");
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
 
         UserDTO user = userService.save(userDTO);
-        logger.info("New user successfully registered, user: {}", user);
+        logger.info("New user successfully registered, user: {}", user.getLogin());
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
@@ -39,6 +39,20 @@ public class UserController {
         UserDTO user = userService.findUserByLogin(login);
         logger.info("User: {}", user);
         return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    @PutMapping("/updatePassword")
+    public ResponseEntity<UserUpdatePasswordDTO> updatePasswordUser (@RequestBody UserUpdatePasswordDTO userUpdatePasswordDTO) {
+        UserDTO user = userService.findUserByLogin(userUpdatePasswordDTO.getLogin());
+        if (user != null) {
+            if(user.getPassword().equals(userUpdatePasswordDTO.getOldPassword())) {
+                if(userUpdatePasswordDTO.getNewPassword().equals(userUpdatePasswordDTO.getConfirmNewPassword())) {
+                    user.setPassword(userUpdatePasswordDTO.getNewPassword());
+                    userService.save(user);
+                }
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
 }
